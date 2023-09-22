@@ -2,24 +2,22 @@
 
 const request = require('request');
 
-request(process.argv[2], function (err, _res, body) {
-  if (err) {
-    console.log(err);
+const url = process.argv[2];
+
+request(url, function (error, response, body) {
+  if (error) {
+    console.error('error:', error);
   } else {
-    const completedTasksByUsers = {};
-    body = JSON.parse(body);
-
-    for (let i = 0; i < body.length; ++i) {
-      const userId = body[i].userId;
-      const completed = body[i].completed;
-
-      if (completed && !completedTasksByUsers[userId]) {
-        completedTasksByUsers[userId] = 0;
+    const bodyParse = JSON.parse(body);
+    const newDict = {};
+    for (let i = 0; i < bodyParse.length; i++) {
+      if (bodyParse[i].completed === true) {
+        if (!newDict[bodyParse[i].userId]) {
+          newDict[bodyParse[i].userId] = 0;
+        }
+        newDict[bodyParse[i].userId]++;
       }
-
-      if (completed) ++completedTasksByUsers[userId];
     }
-
-    console.log(completedTasksByUsers);
+    console.log(newDict);
   }
 });
